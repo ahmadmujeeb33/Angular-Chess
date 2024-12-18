@@ -1,78 +1,125 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Pawn } from '../pieces/pawn';
+import { Pieces } from '../pieces/pieces';
+
+import { ChessboardService } from '../services/chessboard.service';
 
 
 
 @Component({
   selector: 'app-board',
-  imports: [],
+  standalone: true,
   templateUrl: './board.component.html',
-  styleUrl: './board.component.css'
+  styleUrls: ['./board.component.css'],
 })
+
 export class BoardComponent {
-  
-  chessboard:string[][] = [];
 
   
-  ngOnInit() {
-    this.chessboard = this.initializeBoard();
-  }
+  highlightedCells: Set<string> = new Set();
+  lastClickedCell: { row: number; col: number } = {row:-1, col:-1}; 
+  playerTurn: string = "Black"
 
-  initializeBoard() {
-    
-    const blackRow = [
-      { type: 'rook', color: 'black'},
-      { type: 'knight', color: 'black'},
-      { type: 'bishop', color: 'black'},
-      { type: 'queen', color: 'black'},
-      { type: 'king', color: 'black'},
-      { type: 'bishop', color: 'black'},
-      { type: 'knight', color: 'black'},
-      { type: 'rook', color: 'black'},
-    ];
+  chessboardService = inject(ChessboardService)
   
-    const pawnRow = Array(8).fill({ type: 'pawn', color: 'black' });
 
-    const emptyRow = Array(8).fill(null);
+  getCellColor(rowIndex: number, colIndex: number): string {
+    const res = (rowIndex + colIndex) % 2 === 0 ? 'gray' : 'white'
 
-    const whitePawnRow = Array(8).fill({ type: 'pawn', color: 'white' });
+    if( this.highlightedCells.has(`${rowIndex}, ${colIndex}`)){
+      return `${res} opacity`
 
-    const whiteRow = [
-      { type: 'rook', color: 'white' },
-      { type: 'knight', color: 'white' },
-      { type: 'bishop', color: 'white' },
-      { type: 'queen', color: 'white' },
-      { type: 'king', color: 'white' },
-      { type: 'bishop', color: 'white' },
-      { type: 'knight', color: 'white' },
-      { type: 'rook', color: 'white' },
-    ];
-
-    const chessboard = [
-      blackRow, 
-      pawnRow,     
-      emptyRow,   
-      emptyRow,
-      emptyRow,
-      emptyRow,
-      whitePawnRow, 
-      whiteRow,    
-    ];
-
-    console.log("typeof(chessboard)", Array.isArray(chessboard))
-
-    return chessboard
-  
-  }
-
-  getCellColor (rowIndex:number, colIndex:number) {
-       
-    const res =  (rowIndex + colIndex) % 2 === 0 ? 'gray' : 'white'
+    }
 
     return res
 
   }
 
+  handleCellSelection(rowIndex: number, colIndex: number): void {
+    this.lastClickedCell.row = rowIndex;
+    this.lastClickedCell.col = colIndex;
+  
+    
+
+    const pieces = this.chessboardService.chessboard()[rowIndex][colIndex]
+    
+   
+    if (pieces !== null) {
+      const res = pieces.validMoves(this.chessboardService.chessboard());
+      this.updateHighlightedCells(res);
+    }
+  }
+
+  validMoves (rowIndex:number, colIndex:number) {
+
+    if(this.playerTurn === this.chessboardService.chessboard()[rowIndex][colIndex]?.getColor()){
+      if(this.highlightedCells.size!=0  &&  !this.highlightedCells.has(`${rowIndex}, ${colIndex}`)){
+
+     
+        this.highlightedCells.clear()
+  
+        this.handleCellSelection(rowIndex, colIndex)
+  
+      }
+  
+      else if(this.highlightedCells.size==0){
+        this.handleCellSelection(rowIndex, colIndex)
+  
+      }
+    }
+   
+
+    else if(this.highlightedCells.has(`${rowIndex}, ${colIndex}`)){
+      this.highlightedCells.clear()
+
+      let old_pos = this.chessboardService.chessboard()[this.lastClickedCell.row][this.lastClickedCell.col]
+
+      const oldColor = old_pos?.getColor();
+      const newColor = this.chessboardService.chessboard()[rowIndex][colIndex]?.getColor();
+
+      if (oldColor === "Black") {
+        if (newColor === "White" || !newColor) {
+          this.playerTurn = "White";
+        }
+      } 
+      
+      else if (oldColor === "White") {
+        if (newColor === "Black" || !newColor) {
+          this.playerTurn = "Black";
+        }
+      }
 
 
+      this.chessboardService.chessboard()[this.lastClickedCell.row][this.lastClickedCell.col] = null
+
+
+      old_pos?.setPrevRow(rowIndex)
+      old_pos?.setPrevCol(colIndex)
+
+      this.chessboardService.chessboard()[rowIndex][colIndex] = old_pos
+
+    }
+    
+
+  }
+
+  updateHighlightedCells(highlightedCells:  string[]){
+
+    for (const cell of highlightedCells) {
+    
+      this.highlightedCells.add(cell)
+      
+      
+    }
+
+
+  }
+
+  isCellHighlighted(rowIndex: number, colIndex: number){
+  
+    const ans =  this.highlightedCells.has(`${rowIndex}, ${colIndex}`);
+    return ans
+
+  }
 
 }
