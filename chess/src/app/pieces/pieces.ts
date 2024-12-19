@@ -38,15 +38,5 @@ export abstract class Pieces {
         return this.prevCol
     }
 
-    // setHighlightedCells(val: boolean) {
-    //     console.log("val", val)
-    //     this.highlightedCells = val ? !val: val
-    // }
-
-    // getHighlightedCells(){
-    //     console.log("in edfjv", this.highlightedCells)
-    //     return this.highlightedCells
-    // }
-
 }
 
