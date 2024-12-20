@@ -26,8 +26,11 @@ export class Pawn extends Pieces {
             if(chessboard[prevRow-1][prevCol+1]!=null && chessboard[prevRow-1][prevCol+1]?.getColor()!=this.getColor()){
                 newMoves.push(`${prevRow-1}, ${prevCol+1}`)
             }
+
+            if(chessboard[prevRow-1][prevCol]?.getColor()!="White"){
+                newMoves.push(`${prevRow-1}, ${prevCol}`)
+            }
           
-            newMoves.push(`${prevRow-1}, ${prevCol}`)
 
         }
 
@@ -43,8 +46,11 @@ export class Pawn extends Pieces {
             if(chessboard[prevRow+1][prevCol+1]!=null && chessboard[prevRow+1][prevCol+1]?.getColor()!=this.getColor()){
                 newMoves.push(`${prevRow+1}, ${prevCol+1}`)
             }
+
+            if(chessboard[prevRow+1][prevCol]?.getColor()!="Black"){
+                newMoves.push(`${prevRow+1}, ${prevCol}`)
+            }
           
-            newMoves.push(`${prevRow+1}, ${prevCol}`)
         }
 
         return newMoves

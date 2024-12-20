@@ -10,7 +10,6 @@ export class Knight extends Pieces {
 
     validMoves(chessboard: (Pieces | null)[][]): string[] {
 
-        console.log("in knight")
       
         let newMoves: string[] = []; 
 
@@ -37,7 +36,6 @@ export class Knight extends Pieces {
             
         }
 
-        console.log("newmoves", newMoves)
        
         return newMoves
 

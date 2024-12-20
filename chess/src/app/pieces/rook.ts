@@ -5,11 +5,10 @@
 import { Pieces } from "./pieces";
 
 
-export class Bishop extends Pieces {
+export class Rook extends Pieces {
   
 
     validMoves(chessboard: (Pieces | null)[][]): string[] {
-
       
         let newMoves: string[] = []; 
 
@@ -17,7 +16,7 @@ export class Bishop extends Pieces {
         let prevCol = this.getprevCol()
 
         let movements:[number, number][] = [
-            [1,1],[1,-1],[-1,1],[-1,-1]
+            [1,0],[-1,0],[0,1],[0,-1]
         ];
 
 

@@ -3,7 +3,7 @@ import { Pawn } from '../pieces/pawn';
 import { Pieces } from '../pieces/pieces';
 
 import { ChessboardService } from '../services/chessboard.service';
-
+import { CheckService } from '../services/check.service';
 
 
 @Component({
@@ -21,6 +21,7 @@ export class BoardComponent {
   playerTurn: string = "Black"
 
   chessboardService = inject(ChessboardService)
+  checkService = inject(CheckService)
   
 
   getCellColor(rowIndex: number, colIndex: number): string {
@@ -51,6 +52,7 @@ export class BoardComponent {
   }
 
   validMoves (rowIndex:number, colIndex:number) {
+
 
     if(this.playerTurn === this.chessboardService.chessboard()[rowIndex][colIndex]?.getColor()){
       if(this.highlightedCells.size!=0  &&  !this.highlightedCells.has(`${rowIndex}, ${colIndex}`)){
@@ -97,6 +99,10 @@ export class BoardComponent {
       old_pos?.setPrevCol(colIndex)
 
       this.chessboardService.chessboard()[rowIndex][colIndex] = old_pos
+
+      if(this.checkService.isCheck(this.playerTurn)){
+        console.log("in check")
+      }
 
     }
     
