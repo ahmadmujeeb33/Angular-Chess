@@ -8,9 +8,9 @@ import { Pieces } from "./pieces";
 export class Rook extends Pieces {
   
 
-    validMoves(chessboard: (Pieces | null)[][]): string[] {
+    validMoves(chessboard: (Pieces | null)[][]): number[][] {
       
-        let newMoves: string[] = []; 
+        let newMoves: number[][] = []; 
 
         let prevRow = this.getPrevRow()
         let prevCol = this.getprevCol()
@@ -28,7 +28,8 @@ export class Rook extends Pieces {
             while(row_counter + movement[0]!=-1 && row_counter + movement[0]!=8 && col_counter + movement[1]!=-1 && col_counter + movement[1]!=8){
                 
                 if (chessboard[movement[0] + row_counter][movement[1] + col_counter]?.getColor() != this.getColor() && chessboard[movement[0] + row_counter][movement[1] + col_counter]?.getColor() != null){
-                    newMoves.push(`${movement[0] + row_counter}, ${movement[1] + col_counter}`)
+                    let newMove = [movement[0] + row_counter, movement[1] + col_counter]
+                    newMoves.push(newMove)
                     break
                 }
 
@@ -36,8 +37,8 @@ export class Rook extends Pieces {
                     break
                 }
                 
-                
-                newMoves.push(`${movement[0] + row_counter}, ${movement[1] + col_counter}`)
+                let newMove = [movement[0] + row_counter, movement[1] + col_counter]
+                newMoves.push(newMove)
 
                 row_counter+=movement[0]
                 col_counter+=movement[1]

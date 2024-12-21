@@ -6,29 +6,33 @@ import { Pieces } from "./pieces";
 export class Pawn extends Pieces {
   
 
-    validMoves(chessboard: (Pieces | null)[][]): string[] {
+    validMoves(chessboard: (Pieces | null)[][]): number[][] {
 
       
-        let newMoves: string[] = []; 
+        let newMoves: number[][] = []; 
 
         const prevRow = this.getPrevRow()
         const prevCol = this.getprevCol()
 
         if(this.getColor() === "Black"){
             if(prevRow === 6 ) {
-                newMoves.push(`${prevRow-2}, ${prevCol}`)
+                const newMove = [prevRow-2, prevCol]
+                newMoves.push(newMove)
             }
 
             if(chessboard[prevRow-1][prevCol-1]!=null && chessboard[prevRow-1][prevCol-1]?.getColor()!=this.getColor()){
-                newMoves.push(`${prevRow-1}, ${prevCol-1}`)
+                const newMove = [prevRow-1, prevCol-1]
+                newMoves.push(newMove)
             }
 
             if(chessboard[prevRow-1][prevCol+1]!=null && chessboard[prevRow-1][prevCol+1]?.getColor()!=this.getColor()){
-                newMoves.push(`${prevRow-1}, ${prevCol+1}`)
+                const newMove = [prevRow-1, prevCol+1]
+                newMoves.push(newMove)
             }
 
             if(chessboard[prevRow-1][prevCol]?.getColor()!="White"){
-                newMoves.push(`${prevRow-1}, ${prevCol}`)
+                const newMove = [prevRow-1, prevCol]
+                newMoves.push(newMove)
             }
           
 
@@ -36,19 +40,23 @@ export class Pawn extends Pieces {
 
         else{
             if(prevRow === 1 ) {
-                newMoves.push(`${prevRow+2}, ${prevCol}`)
+                const newMove = [prevRow+2, prevCol]
+                newMoves.push(newMove)
             }
 
             if(chessboard[prevRow+1][prevCol-1]!=null && chessboard[prevRow+1][prevCol-1]?.getColor()!=this.getColor()){
-                newMoves.push(`${prevRow+1}, ${prevCol-1}`)
+                const newMove = [prevRow+1, prevCol-1]
+                newMoves.push(newMove)
             }
 
             if(chessboard[prevRow+1][prevCol+1]!=null && chessboard[prevRow+1][prevCol+1]?.getColor()!=this.getColor()){
-                newMoves.push(`${prevRow+1}, ${prevCol+1}`)
+                const newMove = [prevRow+1, prevCol+1]
+                newMoves.push(newMove)
             }
 
             if(chessboard[prevRow+1][prevCol]?.getColor()!="Black"){
-                newMoves.push(`${prevRow+1}, ${prevCol}`)
+                const newMove = [prevRow+1, prevCol]
+                newMoves.push(newMove)
             }
           
         }

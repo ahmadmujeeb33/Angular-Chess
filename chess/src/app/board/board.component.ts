@@ -79,16 +79,13 @@ export class BoardComponent {
       const oldColor = old_pos?.getColor();
       const newColor = this.chessboardService.chessboard()[rowIndex][colIndex]?.getColor();
 
-      if (oldColor === "Black") {
-        if (newColor === "White" || !newColor) {
-          this.playerTurn = "White";
-        }
+      if (oldColor === "Black" && (newColor === "White" || !newColor)) {
+        this.playerTurn = "White";
+        
       } 
       
-      else if (oldColor === "White") {
-        if (newColor === "Black" || !newColor) {
-          this.playerTurn = "Black";
-        }
+      else if (oldColor === "White" && (newColor === "Black" || !newColor)) {
+        this.playerTurn = "Black";
       }
 
 
@@ -101,19 +98,23 @@ export class BoardComponent {
       this.chessboardService.chessboard()[rowIndex][colIndex] = old_pos
 
       if(this.checkService.isCheck(this.playerTurn)){
-        console.log("in check")
-      }
+        if(this.checkService.isCheckMate(this.playerTurn)){
+          console.log("in checkmate")
+        }
+        else{
+          console.log("in check")
 
+        }
+      }
     }
-    
 
   }
 
-  updateHighlightedCells(highlightedCells:  string[]){
+  updateHighlightedCells(highlightedCells:  number[][]){
 
     for (const cell of highlightedCells) {
     
-      this.highlightedCells.add(cell)
+      this.highlightedCells.add(`${cell[0]}, ${cell[1]}`)
       
       
     }

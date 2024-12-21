@@ -149,6 +149,36 @@ export class CheckService {
         
         return false
     }
+
+    isCheckMate(playerTurn:  string){
+
+        const kingPosition = this.getKingPosition(playerTurn)
+
+        const validMoves = this.chessboardService.chessboard()[kingPosition[0]][kingPosition[1]]?.validMoves(this.chessboardService.chessboard())
+
+        if (validMoves) {
+            for (const move of validMoves) {
+                const val = this.chessboardService.chessboard()[kingPosition[0]][kingPosition[1]];
+                this.chessboardService.chessboard()[kingPosition[0]][kingPosition[1]] = null;
+                const moveVal = this.chessboardService.chessboard()[move[0]][move[1]]
+
+                this.chessboardService.chessboard()[move[0]][move[1]] = val;
+
+
+                if (!this.isCheck(playerTurn)) {
+                    this.chessboardService.chessboard()[kingPosition[0]][kingPosition[1]] = val;
+                    this.chessboardService.chessboard()[move[0]][move[1]] = moveVal;
+                    return false; 
+                }
+
+                this.chessboardService.chessboard()[kingPosition[0]][kingPosition[1]] = val;
+                this.chessboardService.chessboard()[move[0]][move[1]] = moveVal;
+            }
+        }
+
+        return true
+
+    }
    
 }
 

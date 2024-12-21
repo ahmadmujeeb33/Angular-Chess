@@ -17,7 +17,7 @@ export abstract class Pieces {
         this.name = name
     }
 
-    abstract validMoves(chessboard: (Pieces | null)[][]):  string[];
+    abstract validMoves(chessboard: (Pieces | null)[][]):  number[][];
 
     setPrevRow(row:number){
         this.prevRow = row
