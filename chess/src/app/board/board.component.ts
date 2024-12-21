@@ -54,7 +54,7 @@ export class BoardComponent {
   validMoves (rowIndex:number, colIndex:number) {
 
 
-    if(this.playerTurn === this.chessboardService.chessboard()[rowIndex][colIndex]?.getColor()){
+    if(this.playerTurn === this.chessboardService.chessboard()[rowIndex][colIndex]?.getColor() && !this.checkService.canCauseCheck(rowIndex,colIndex,this.playerTurn) ){
       if(this.highlightedCells.size!=0  &&  !this.highlightedCells.has(`${rowIndex}, ${colIndex}`)){
 
      

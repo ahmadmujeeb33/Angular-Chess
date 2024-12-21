@@ -132,6 +132,23 @@ export class CheckService {
 
         return kingPosition
     }
+
+    canCauseCheck(rowIndex:number, colIndex:number,playerTurn:string){
+
+        const currVal = this.chessboardService.chessboard()[rowIndex][colIndex]
+        this.chessboardService.chessboard()[rowIndex][colIndex] = null
+
+        if(this.isCheck(playerTurn)){
+            console.log("can save check")
+            this.chessboardService.chessboard()[rowIndex][colIndex]  = currVal
+            return true
+        }
+
+
+        this.chessboardService.chessboard()[rowIndex][colIndex]  = currVal
+        
+        return false
+    }
    
 }
 
