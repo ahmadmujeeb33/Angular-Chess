@@ -13,7 +13,7 @@ import { ChessboardService } from './chessboard.service';
 export class CheckService {
 
     chessboardService = inject(ChessboardService)
-    
+
    
 
 
@@ -189,25 +189,28 @@ export class CheckService {
 
         for(let i=0;i<8;i++){
             for(let j=0;j<8;j++){
-                
-                let validMoves: number[][] | undefined = this.chessboardService.chessboard()[i][j]?.validMoves(this.chessboardService.chessboard())
-                
-                if(validMoves){
-                    for(let moves of validMoves){
+
+                if(this.chessboardService.chessboard()[i][j]?.getColor() === this.chessboardService.playerTurn){
                     
-                        let temp = this.chessboardService.chessboard()[i][j]
-                        this.chessboardService.chessboard()[i][j] = this.chessboardService.chessboard()[moves[0]][moves[1]]
-                        this.chessboardService.chessboard()[moves[0]][moves[1]] = temp
-
-                        if(!this.isCheck()){
-                            this.chessboardService.chessboard()[moves[0]][moves[1]] = this.chessboardService.chessboard()[i][j]
-                            this.chessboardService.chessboard()[i][j] = temp    
-                            return true
-                        }
-
-                        this.chessboardService.chessboard()[moves[0]][moves[1]] = this.chessboardService.chessboard()[i][j]
-                        this.chessboardService.chessboard()[i][j] = temp
+                    let validMoves: number[][] | undefined = this.chessboardService.chessboard()[i][j]?.validMoves(this.chessboardService.chessboard())
+                
+                    if(validMoves){
+                        for(let moves of validMoves){
+                        
+                            let temp = this.chessboardService.chessboard()[i][j]
+                            this.chessboardService.chessboard()[i][j] = this.chessboardService.chessboard()[moves[0]][moves[1]]
+                            this.chessboardService.chessboard()[moves[0]][moves[1]] = temp
     
+                            if(!this.isCheck()){
+                                this.chessboardService.chessboard()[moves[0]][moves[1]] = this.chessboardService.chessboard()[i][j]
+                                this.chessboardService.chessboard()[i][j] = temp    
+                                return true
+                            }
+    
+                            this.chessboardService.chessboard()[moves[0]][moves[1]] = this.chessboardService.chessboard()[i][j]
+                            this.chessboardService.chessboard()[i][j] = temp
+        
+                        }
                     }
                 }
                
@@ -222,6 +225,7 @@ export class CheckService {
         const kingPosition = this.getKingPosition()
 
         if(this.canSaveCheckMate()){
+            console.log("this")
             return false
         }
 

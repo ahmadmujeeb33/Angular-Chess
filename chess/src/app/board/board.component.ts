@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, ChangeDetectorRef, signal } from '@angular/core';
 import { Pawn } from '../pieces/pawn';
 import { Pieces } from '../pieces/pieces';
 
@@ -25,6 +25,7 @@ export class BoardComponent {
   checkService = inject(CheckService)
 
   isCheckVal = '' 
+  isCheckMate = signal(false)
 
 
   getCellColor(rowIndex: number, colIndex: number): string {
@@ -118,19 +119,15 @@ export class BoardComponent {
 
 
             if(this.checkService.isCheckMate()){
+              this.isCheckMate.set(true)
               console.log("in checkmate")
             }
-            else{
-              console.log("in check")
-    
-            }
 
-            console.log("dfgh", this.chessboardService.pieceCausingCheck())
           }
           else{
             
+            this.isCheckMate.set(false)
             this.isCheckVal = ''
-
             this.chessboardService.isCheck = false
 
           }
