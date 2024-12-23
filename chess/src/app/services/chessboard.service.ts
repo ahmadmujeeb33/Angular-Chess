@@ -13,6 +13,10 @@ import { Rook } from '../pieces/rook';
 export class ChessboardService {
     
     chessboard = signal<(Pieces | null)[][]>(this.initializeBoard());
+    playerTurn: string = "Black"
+
+    isCheck: boolean = false
+
 
     private initializeBoard(): (Pieces | null)[][] {
         

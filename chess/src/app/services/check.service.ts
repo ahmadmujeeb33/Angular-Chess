@@ -2,6 +2,7 @@
 
 
 import { Injectable, inject} from '@angular/core';
+import { Pawn } from '../pieces/pawn';
 
 import { ChessboardService } from './chessboard.service';
 
@@ -12,19 +13,25 @@ import { ChessboardService } from './chessboard.service';
 export class CheckService {
 
     chessboardService = inject(ChessboardService)
+   
 
-    isCheckRiders(movements: number[][], kingPosition: number[], playerTurn: string, pieceName: string){
+
+    isCheckRiders(movements: number[][], kingPosition: number[], pieceName: string){
 
         for(let movement of movements){
             
             let row_counter = kingPosition[0]
             let col_counter = kingPosition[1]
 
-            const chessboard = this.chessboardService.chessboard() 
            
             while(row_counter + movement[0]!=-1 && row_counter + movement[0]!=8 && col_counter + movement[1]!=-1 && col_counter + movement[1]!=8){
                 
-                if (chessboard[movement[0] + row_counter][movement[1] + col_counter]?.getColor() != playerTurn && chessboard[movement[0] + row_counter][movement[1] + col_counter]?.getName() == pieceName){
+                
+                if(this.chessboardService.chessboard()[movement[0] + row_counter][movement[1] + col_counter]?.getColor() == this.chessboardService.playerTurn){
+                    break
+                }
+                
+                if (this.chessboardService.chessboard()[movement[0] + row_counter][movement[1] + col_counter]?.getColor() != this.chessboardService.playerTurn && this.chessboardService.chessboard()[movement[0] + row_counter][movement[1] + col_counter]?.getName() == pieceName){
                     return true
                 }
 
@@ -41,7 +48,7 @@ export class CheckService {
     }
 
 
-    isCheckKnight(kingPosition: number[], playerTurn: string){
+    isCheckKnight(kingPosition: number[]){
 
         const chessboard = this.chessboardService.chessboard() 
 
@@ -59,7 +66,7 @@ export class CheckService {
 
         for(let movement of knightMovements){
             
-            if (movement[0] > -1 && movement[0] < 8 && movement[1]  > -1 && movement[1] < 8 && chessboard[movement[0]][movement[1]]?.getColor() != playerTurn && chessboard[movement[0]][movement[1]]?.getName() == "Knight"){
+            if (movement[0] > -1 && movement[0] < 8 && movement[1]  > -1 && movement[1] < 8 && chessboard[movement[0]][movement[1]]?.getColor() != this.chessboardService.playerTurn && chessboard[movement[0]][movement[1]]?.getName() == "Knight"){
                 return true
             }
 
@@ -69,27 +76,39 @@ export class CheckService {
 
     }
 
-    isCheckPawns(playerTurn: string){
+    isCheckPawns(kingPosition: number[]){
 
         let movements:number[][] = []
 
-        if (playerTurn == "White"){
+        if (this.chessboardService.playerTurn == "White"){
+
+
             movements.push([1,-1])
             movements.push([-1,-1])
 
         }
 
-        else if (playerTurn == "Black"){
+        else if (this.chessboardService.playerTurn == "Black"){
             movements.push([1,1])
             movements.push([-1,1])
 
         }
+
+        for(let movement of movements){
+            
+            if (kingPosition[0] + movement[0] > -1 && kingPosition[0] + movement[0] < 8 && kingPosition[1] + movement[1]  > -1 && kingPosition[1] + movement[1] < 8 && this.chessboardService.chessboard()[ kingPosition[0] + movement[0]][ kingPosition[1] + movement[1]]?.getName() == "Pawns"){
+                return true
+            }
+
+        }
+
+        return false
     }
 
    
-    isCheck(playerTurn: string): boolean {
+    isCheck(): boolean {
 
-        const kingPosition = this.getKingPosition(playerTurn)
+        const kingPosition = this.getKingPosition()
 
         let bishopMovements = [ [1,-1],[-1,1],[1,1],[-1,-1],]
 
@@ -98,28 +117,25 @@ export class CheckService {
         let queenMovements =  [ [1,-1], [-1,1],[1,1],[-1,-1],[1,0],[0,-1],[0,1],[-1,0]]
 
 
-        if(this.isCheckRiders(bishopMovements, kingPosition,playerTurn, "Bishop") ||  this.isCheckRiders(rookMovements, kingPosition,playerTurn, "Rook") || this.isCheckRiders(queenMovements, kingPosition,playerTurn, "Queen") || this.isCheckKnight(kingPosition,playerTurn) ||  this.isCheckPawns(playerTurn)
+        if(this.isCheckRiders(bishopMovements, kingPosition, "Bishop") ||  this.isCheckRiders(rookMovements, kingPosition, "Rook") || this.isCheckRiders(queenMovements, kingPosition, "Queen") || this.isCheckKnight(kingPosition) ||  this.isCheckPawns(kingPosition)
         ){
-
             return true
 
         }
 
-       
         return false
 
     }
 
 
-
-    getKingPosition(playerTurn:  String){
+    getKingPosition(){
 
         let kingPosition: number[] = [0,0]
 
         this.chessboardService.chessboard().some((row, i) => {
 
             return row.some((piece,j) => {
-                if(piece?.getColor() == playerTurn &&  piece?.getName() == "King"){
+                if(piece?.getColor() == this.chessboardService.playerTurn &&  piece?.getName() == "King"){
                     kingPosition[0] = i
                     kingPosition[1] = j
                     return true
@@ -133,16 +149,20 @@ export class CheckService {
         return kingPosition
     }
 
-    canCauseCheck(rowIndex:number, colIndex:number,playerTurn:string){
+    canCauseCheck(rowIndex:number, colIndex:number){
 
-        const currVal = this.chessboardService.chessboard()[rowIndex][colIndex]
-        this.chessboardService.chessboard()[rowIndex][colIndex] = null
+        if(this.chessboardService.isCheck){
+            return false
+        }
 
-        if(this.isCheck(playerTurn)){
-            console.log("can save check")
+        const currVal =  this.chessboardService.chessboard()[rowIndex][colIndex]
+         this.chessboardService.chessboard()[rowIndex][colIndex] = null
+
+        if(this.isCheck()){
             this.chessboardService.chessboard()[rowIndex][colIndex]  = currVal
             return true
         }
+
 
 
         this.chessboardService.chessboard()[rowIndex][colIndex]  = currVal
@@ -150,9 +170,47 @@ export class CheckService {
         return false
     }
 
-    isCheckMate(playerTurn:  string){
 
-        const kingPosition = this.getKingPosition(playerTurn)
+    canSaveCheckMate(){
+
+
+        for(let i=0;i<8;i++){
+            for(let j=0;j<8;j++){
+                
+                let validMoves: number[][] | undefined = this.chessboardService.chessboard()[i][j]?.validMoves(this.chessboardService.chessboard())
+                
+                if(validMoves){
+                    for(let moves of validMoves){
+                    
+                        let temp = this.chessboardService.chessboard()[i][j]
+                        this.chessboardService.chessboard()[i][j] = this.chessboardService.chessboard()[moves[0]][moves[1]]
+                        this.chessboardService.chessboard()[moves[0]][moves[1]] = temp
+
+                        if(!this.isCheck()){
+                            this.chessboardService.chessboard()[moves[0]][moves[1]] = this.chessboardService.chessboard()[i][j]
+                            this.chessboardService.chessboard()[i][j] = temp    
+                            return true
+                        }
+
+                        this.chessboardService.chessboard()[moves[0]][moves[1]] = this.chessboardService.chessboard()[i][j]
+                        this.chessboardService.chessboard()[i][j] = temp
+    
+                    }
+                }
+               
+            }
+        }
+
+        return false
+    }
+
+    isCheckMate(){
+
+        const kingPosition = this.getKingPosition()
+
+        if(this.canSaveCheckMate()){
+            return false
+        }
 
         const validMoves = this.chessboardService.chessboard()[kingPosition[0]][kingPosition[1]]?.validMoves(this.chessboardService.chessboard())
 
@@ -165,7 +223,7 @@ export class CheckService {
                 this.chessboardService.chessboard()[move[0]][move[1]] = val;
 
 
-                if (!this.isCheck(playerTurn)) {
+                if (!this.isCheck()) {
                     this.chessboardService.chessboard()[kingPosition[0]][kingPosition[1]] = val;
                     this.chessboardService.chessboard()[move[0]][move[1]] = moveVal;
                     return false; 

@@ -18,10 +18,10 @@ export class BoardComponent {
   
   highlightedCells: Set<string> = new Set();
   lastClickedCell: { row: number; col: number } = {row:-1, col:-1}; 
-  playerTurn: string = "Black"
 
   chessboardService = inject(ChessboardService)
   checkService = inject(CheckService)
+
   
 
   getCellColor(rowIndex: number, colIndex: number): string {
@@ -53,11 +53,13 @@ export class BoardComponent {
 
   validMoves (rowIndex:number, colIndex:number) {
 
+    // if(this.chessboardService.isCheck){
+      
+    // }
 
-    if(this.playerTurn === this.chessboardService.chessboard()[rowIndex][colIndex]?.getColor() && !this.checkService.canCauseCheck(rowIndex,colIndex,this.playerTurn) ){
+    if(this.chessboardService.playerTurn === this.chessboardService.chessboard()[rowIndex][colIndex]?.getColor() && (!this.checkService.canCauseCheck(rowIndex,colIndex))){
       if(this.highlightedCells.size!=0  &&  !this.highlightedCells.has(`${rowIndex}, ${colIndex}`)){
 
-     
         this.highlightedCells.clear()
   
         this.handleCellSelection(rowIndex, colIndex)
@@ -72,40 +74,67 @@ export class BoardComponent {
    
 
     else if(this.highlightedCells.has(`${rowIndex}, ${colIndex}`)){
-      this.highlightedCells.clear()
 
-      let old_pos = this.chessboardService.chessboard()[this.lastClickedCell.row][this.lastClickedCell.col]
+  
+        this.highlightedCells.clear()
 
-      const oldColor = old_pos?.getColor();
-      const newColor = this.chessboardService.chessboard()[rowIndex][colIndex]?.getColor();
+        let old_pos = this.chessboardService.chessboard()[this.lastClickedCell.row][this.lastClickedCell.col]
+  
+        const oldColor = old_pos?.getColor();
 
-      if (oldColor === "Black" && (newColor === "White" || !newColor)) {
-        this.playerTurn = "White";
-        
-      } 
-      
-      else if (oldColor === "White" && (newColor === "Black" || !newColor)) {
-        this.playerTurn = "Black";
-      }
+        this.chessboardService.chessboard()[this.lastClickedCell.row][this.lastClickedCell.col] = null
+  
+  
+        old_pos?.setPrevRow(rowIndex)
+        old_pos?.setPrevCol(colIndex)
 
+        this.chessboardService.chessboard()[rowIndex][colIndex] = old_pos
 
-      this.chessboardService.chessboard()[this.lastClickedCell.row][this.lastClickedCell.col] = null
-
-
-      old_pos?.setPrevRow(rowIndex)
-      old_pos?.setPrevCol(colIndex)
-
-      this.chessboardService.chessboard()[rowIndex][colIndex] = old_pos
-
-      if(this.checkService.isCheck(this.playerTurn)){
-        if(this.checkService.isCheckMate(this.playerTurn)){
-          console.log("in checkmate")
+  
+        if (this.chessboardService.isCheck && this.checkService.isCheck()){
+          let old_pos = this.chessboardService.chessboard()[rowIndex][colIndex]
+    
+          this.chessboardService.chessboard()[this.lastClickedCell.row][this.lastClickedCell.col] = old_pos
+    
+    
+          old_pos?.setPrevRow(this.lastClickedCell.row)
+          old_pos?.setPrevCol(this.lastClickedCell.col)
+  
+          this.chessboardService.chessboard()[rowIndex][colIndex] = null
         }
+
         else{
-          console.log("in check")
+          
+          if (oldColor === "Black" ) {
+            this.chessboardService.playerTurn = "White";
+            
+          } 
+          
+          else if (oldColor === "White") {
+            this.chessboardService.playerTurn = "Black";
+          }
+    
+          if(this.checkService.isCheck()){
+            this.chessboardService.isCheck = true
+            if(this.checkService.isCheckMate()){
+              console.log("in checkmate")
+            }
+            else{
+              console.log("in check")
+    
+            }
+          }
+          else{
+            this.chessboardService.isCheck = false
 
+          }
         }
-      }
+  
+  
+       
+      // }
+
+   
     }
 
   }
