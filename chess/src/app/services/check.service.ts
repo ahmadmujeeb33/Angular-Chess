@@ -15,8 +15,6 @@ export class CheckService {
     chessboardService = inject(ChessboardService)
 
    
-
-
     isCheckRiders(movements: number[][], kingPosition: number[], pieceName: string){
 
         for(let movement of movements){
@@ -225,7 +223,6 @@ export class CheckService {
         const kingPosition = this.getKingPosition()
 
         if(this.canSaveCheckMate()){
-            console.log("this")
             return false
         }
 
