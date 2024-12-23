@@ -1,4 +1,4 @@
-import { Injectable,signal } from '@angular/core';
+import { Injectable,signal,WritableSignal  } from '@angular/core';
 import { Bishop } from '../pieces/bishop';
 import { King } from '../pieces/king';
 import { Knight } from '../pieces/knight';
@@ -17,6 +17,7 @@ export class ChessboardService {
 
     isCheck: boolean = false
 
+    pieceCausingCheck: WritableSignal<string> = signal("");
 
     private initializeBoard(): (Pieces | null)[][] {
         

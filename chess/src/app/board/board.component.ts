@@ -1,9 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { Pawn } from '../pieces/pawn';
 import { Pieces } from '../pieces/pieces';
 
 import { ChessboardService } from '../services/chessboard.service';
 import { CheckService } from '../services/check.service';
+
+
 
 
 @Component({
@@ -22,14 +24,20 @@ export class BoardComponent {
   chessboardService = inject(ChessboardService)
   checkService = inject(CheckService)
 
-  
+  isCheckVal = '' 
+
 
   getCellColor(rowIndex: number, colIndex: number): string {
-    const res = (rowIndex + colIndex) % 2 === 0 ? 'gray' : 'white'
+    let res = (rowIndex + colIndex) % 2 === 0 ? 'gray' : 'white'
 
     if( this.highlightedCells.has(`${rowIndex}, ${colIndex}`)){
-      return `${res} opacity`
+      res +=  ` opacity`
 
+    }
+
+    if(this.isCheckVal[0] ==  rowIndex.toString() && this.isCheckVal[3] ==  colIndex.toString()){
+      console.log("in here")
+      res+=  ` check`
     }
 
     return res
@@ -102,7 +110,13 @@ export class BoardComponent {
           this.chessboardService.playerTurn = this.chessboardService.playerTurn === "Black" ? "White" : "Black";          
     
           if(this.checkService.isCheck()){
+
+            
             this.chessboardService.isCheck = true
+
+            this.isCheckVal = this.chessboardService.pieceCausingCheck()
+
+
             if(this.checkService.isCheckMate()){
               console.log("in checkmate")
             }
@@ -110,8 +124,13 @@ export class BoardComponent {
               console.log("in check")
     
             }
+
+            console.log("dfgh", this.chessboardService.pieceCausingCheck())
           }
           else{
+            
+            this.isCheckVal = ''
+
             this.chessboardService.isCheck = false
 
           }

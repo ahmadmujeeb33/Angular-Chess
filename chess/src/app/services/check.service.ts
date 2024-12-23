@@ -13,6 +13,7 @@ import { ChessboardService } from './chessboard.service';
 export class CheckService {
 
     chessboardService = inject(ChessboardService)
+    
    
 
 
@@ -32,6 +33,9 @@ export class CheckService {
                 }
                 
                 if (this.chessboardService.chessboard()[movement[0] + row_counter][movement[1] + col_counter]?.getColor() != this.chessboardService.playerTurn && this.chessboardService.chessboard()[movement[0] + row_counter][movement[1] + col_counter]?.getName() == pieceName){
+
+                    this.chessboardService.pieceCausingCheck.set(`${movement[0] + row_counter}, ${movement[1] + col_counter}`)
+                    
                     return true
                 }
 
@@ -42,6 +46,9 @@ export class CheckService {
 
             }
         }
+
+        this.chessboardService.pieceCausingCheck.set("")
+
 
         return false
 
@@ -67,10 +74,13 @@ export class CheckService {
         for(let movement of knightMovements){
             
             if (movement[0] > -1 && movement[0] < 8 && movement[1]  > -1 && movement[1] < 8 && chessboard[movement[0]][movement[1]]?.getColor() != this.chessboardService.playerTurn && chessboard[movement[0]][movement[1]]?.getName() == "Knight"){
+                this.chessboardService.pieceCausingCheck.set(`${movement[0]}, ${movement[1]}`)
                 return true
             }
 
         }
+
+        this.chessboardService.pieceCausingCheck.set("")
 
         return false
 
@@ -97,10 +107,13 @@ export class CheckService {
         for(let movement of movements){
             
             if (kingPosition[0] + movement[0] > -1 && kingPosition[0] + movement[0] < 8 && kingPosition[1] + movement[1]  > -1 && kingPosition[1] + movement[1] < 8 && this.chessboardService.chessboard()[ kingPosition[0] + movement[0]][ kingPosition[1] + movement[1]]?.getName() == "Pawns"){
+                this.chessboardService.pieceCausingCheck.set(`${kingPosition[0] + movement[0]}, ${kingPosition[1] + movement[1]}`)
                 return true
             }
 
         }
+
+        this.chessboardService.pieceCausingCheck.set("")
 
         return false
     }
