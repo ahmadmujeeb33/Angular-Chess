@@ -53,10 +53,6 @@ export class BoardComponent {
 
   validMoves (rowIndex:number, colIndex:number) {
 
-    // if(this.chessboardService.isCheck){
-      
-    // }
-
     if(this.chessboardService.playerTurn === this.chessboardService.chessboard()[rowIndex][colIndex]?.getColor() && (!this.checkService.canCauseCheck(rowIndex,colIndex))){
       if(this.highlightedCells.size!=0  &&  !this.highlightedCells.has(`${rowIndex}, ${colIndex}`)){
 
@@ -80,10 +76,8 @@ export class BoardComponent {
 
         let old_pos = this.chessboardService.chessboard()[this.lastClickedCell.row][this.lastClickedCell.col]
   
-        const oldColor = old_pos?.getColor();
 
         this.chessboardService.chessboard()[this.lastClickedCell.row][this.lastClickedCell.col] = null
-  
   
         old_pos?.setPrevRow(rowIndex)
         old_pos?.setPrevCol(colIndex)
@@ -104,15 +98,8 @@ export class BoardComponent {
         }
 
         else{
-          
-          if (oldColor === "Black" ) {
-            this.chessboardService.playerTurn = "White";
-            
-          } 
-          
-          else if (oldColor === "White") {
-            this.chessboardService.playerTurn = "Black";
-          }
+
+          this.chessboardService.playerTurn = this.chessboardService.playerTurn === "Black" ? "White" : "Black";          
     
           if(this.checkService.isCheck()){
             this.chessboardService.isCheck = true
@@ -130,11 +117,6 @@ export class BoardComponent {
           }
         }
   
-  
-       
-      // }
-
-   
     }
 
   }
