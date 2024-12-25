@@ -27,6 +27,7 @@ export class BoardComponent {
 
   isCheckVal = '' 
   isCheckMate = signal(false)
+  playerTurn = ChessColor.BLACK
 
 
   getCellColor(rowIndex: number, colIndex: number): string {
@@ -64,7 +65,8 @@ export class BoardComponent {
 
   validMoves (rowIndex:number, colIndex:number) {
 
-    if(this.chessboardService.playerTurn === this.chessboardService.chessboard()[rowIndex][colIndex]?.getColor() && (!this.checkService.canCauseCheck(rowIndex,colIndex)) ){
+
+    if( this.playerTurn === this.chessboardService.chessboard()[rowIndex][colIndex]?.getColor()){
       if(this.highlightedCells.size!=0  &&  !this.highlightedCells.has(`${rowIndex}, ${colIndex}`)){
 
         this.highlightedCells.clear()
@@ -97,7 +99,12 @@ export class BoardComponent {
         this.chessboardService.chessboard()[rowIndex][colIndex] = old_pos
 
 
-        if (this.chessboardService.isCheck && this.checkService.something()){
+        
+        // const color = this.chessboardService.chessboard()[rowIndex][colIndex]?.getColor()
+
+        const ans = this.checkService.isCheck(this.playerTurn)
+
+        if (ans){
           
           let old_pos = this.chessboardService.chessboard()[rowIndex][colIndex]
     
@@ -108,39 +115,49 @@ export class BoardComponent {
           old_pos?.setPrevCol(this.lastClickedCell.col)
   
           this.chessboardService.chessboard()[rowIndex][colIndex] = null
+
+          
+          return
+ 
+        }
+
+        
+        if(!this.chessboardService.isCheck){
+          this.playerTurn = this.playerTurn === ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
+
         }
 
 
+        
+        const res = this.checkService.isCheck(this.playerTurn)
+
+
+        if(res){
+
+          this.chessboardService.isCheck = true
+
+          this.isCheckVal = this.chessboardService.pieceCausingCheck()
+
+          console.log("//////")
+
+          if(this.checkService.isCheckMate(this.playerTurn)){
+            this.isCheckMate.set(true)
+          }
+
+
+          
+        }
         else{
 
-
-
-          if(this.checkService.isCheck()){
-
-            this.chessboardService.isCheck = true
-
-            this.isCheckVal = this.chessboardService.pieceCausingCheck()
-
-            this.chessboardService.playerTurn = this.chessboardService.playerTurn === ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;          
-
-            if(this.checkService.isCheckMate()){
-              this.isCheckMate.set(true)
-            }
-
-            this.chessboardService.playerTurn = this.chessboardService.playerTurn === ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;          
-
-           
-          }
-          else{
-
-            
-            this.isCheckMate.set(false)
-            this.isCheckVal = ''
-            this.chessboardService.isCheck = false
+          if(this.chessboardService.isCheck){
+            this.playerTurn = this.playerTurn === ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
 
           }
+          
+          this.isCheckVal = ''
+          this.chessboardService.isCheck = false
 
-          this.chessboardService.playerTurn = this.chessboardService.playerTurn === ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;          
+
 
         }
   
