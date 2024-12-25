@@ -2,6 +2,7 @@
 
 import { Pieces } from "./pieces";
 
+import { ChessColor } from "../utils/utils";
 
 export class Pawn extends Pieces {
   
@@ -14,7 +15,7 @@ export class Pawn extends Pieces {
         const prevRow = this.getPrevRow()
         const prevCol = this.getprevCol()
 
-        if(this.getColor() === "Black"){
+        if(this.getColor() === ChessColor.BLACK){
             if(prevRow === 6 ) {
                 const newMove = [prevRow-2, prevCol]
                 newMoves.push(newMove)
@@ -30,7 +31,7 @@ export class Pawn extends Pieces {
                 newMoves.push(newMove)
             }
 
-            if(chessboard[prevRow-1][prevCol]?.getColor()!="White"){
+            if(chessboard[prevRow-1][prevCol]?.getColor()!=ChessColor.WHITE){
                 const newMove = [prevRow-1, prevCol]
                 newMoves.push(newMove)
             }
@@ -54,7 +55,7 @@ export class Pawn extends Pieces {
                 newMoves.push(newMove)
             }
 
-            if(chessboard[prevRow+1][prevCol]?.getColor()!="Black"){
+            if(chessboard[prevRow+1][prevCol]?.getColor()!=ChessColor.BLACK){
                 const newMove = [prevRow+1, prevCol]
                 newMoves.push(newMove)
             }

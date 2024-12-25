@@ -4,6 +4,7 @@ import { Pieces } from '../pieces/pieces';
 
 import { ChessboardService } from '../services/chessboard.service';
 import { CheckService } from '../services/check.service';
+import { ChessColor } from '../utils/utils';
 
 
 
@@ -60,9 +61,10 @@ export class BoardComponent {
     }
   }
 
+
   validMoves (rowIndex:number, colIndex:number) {
 
-    if(this.chessboardService.playerTurn === this.chessboardService.chessboard()[rowIndex][colIndex]?.getColor() && (!this.checkService.canCauseCheck(rowIndex,colIndex))){
+    if(this.chessboardService.playerTurn === this.chessboardService.chessboard()[rowIndex][colIndex]?.getColor() && (!this.checkService.canCauseCheck(rowIndex,colIndex)) ){
       if(this.highlightedCells.size!=0  &&  !this.highlightedCells.has(`${rowIndex}, ${colIndex}`)){
 
         this.highlightedCells.clear()
@@ -73,6 +75,7 @@ export class BoardComponent {
   
       else if(this.highlightedCells.size==0){
         this.handleCellSelection(rowIndex, colIndex)
+        
   
       }
     }
@@ -93,8 +96,9 @@ export class BoardComponent {
 
         this.chessboardService.chessboard()[rowIndex][colIndex] = old_pos
 
-  
-        if (this.chessboardService.isCheck && this.checkService.isCheck()){
+
+        if (this.chessboardService.isCheck && this.checkService.something()){
+          
           let old_pos = this.chessboardService.chessboard()[rowIndex][colIndex]
     
           this.chessboardService.chessboard()[this.lastClickedCell.row][this.lastClickedCell.col] = old_pos
@@ -106,31 +110,38 @@ export class BoardComponent {
           this.chessboardService.chessboard()[rowIndex][colIndex] = null
         }
 
+
         else{
 
-          this.chessboardService.playerTurn = this.chessboardService.playerTurn === "Black" ? "White" : "Black";          
-    
+
+
           if(this.checkService.isCheck()){
 
-            
             this.chessboardService.isCheck = true
 
             this.isCheckVal = this.chessboardService.pieceCausingCheck()
 
+            this.chessboardService.playerTurn = this.chessboardService.playerTurn === ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;          
 
             if(this.checkService.isCheckMate()){
               this.isCheckMate.set(true)
-              console.log("in checkmate")
             }
 
+            this.chessboardService.playerTurn = this.chessboardService.playerTurn === ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;          
+
+           
           }
           else{
+
             
             this.isCheckMate.set(false)
             this.isCheckVal = ''
             this.chessboardService.isCheck = false
 
           }
+
+          this.chessboardService.playerTurn = this.chessboardService.playerTurn === ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;          
+
         }
   
     }

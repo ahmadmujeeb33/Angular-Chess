@@ -2,10 +2,6 @@
 
 <div class="container">
 
-   <!-- @if(isCheckVal !== ''){
-     <p>In here</p>
-   } -->
-
   <div class="chessboard">
     @for (row of chessboardService.chessboard(); track row; let rowIndex = $index) {
       @for (cell of row; track cell; let colIndex = $index) {

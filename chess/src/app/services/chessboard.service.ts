@@ -7,62 +7,70 @@ import { Pieces } from '../pieces/pieces';
 import { Queen } from '../pieces/queen';
 import { Rook } from '../pieces/rook';
 
+import { ChessColor } from '../utils/utils';
+
+import { ChessPieces } from '../utils/utils';
+
+import { Images } from '../utils/utils';
+
 @Injectable({ 
     providedIn: 'root'
 })
 export class ChessboardService {
     
     chessboard = signal<(Pieces | null)[][]>(this.initializeBoard());
-    playerTurn: string = "Black"
+    playerTurn: string = ChessColor.BLACK
 
     isCheck: boolean = false
+
+    
 
     pieceCausingCheck: WritableSignal<string> = signal("");
 
     private initializeBoard(): (Pieces | null)[][] {
         
         const blackPawnRow = [
-            new Pawn('Black', 6, 0, 'BPawn.png',"Pawn"),
-            new Pawn('Black', 6, 1, 'BPawn.png',"Pawn"),
-            new Pawn('Black', 6, 2, 'BPawn.png',"Pawn"),
-            new Pawn('Black', 6, 3, 'BPawn.png',"Pawn"),
-            new Pawn('Black', 6, 4, 'BPawn.png',"Pawn"),
-            new Pawn('Black', 6, 5, 'BPawn.png',"Pawn"),
-            new Pawn('Black', 6, 6, 'BPawn.png',"Pawn"),
-            new Pawn('Black', 6, 7, 'BPawn.png',"Pawn")
+            new Pawn(ChessColor.BLACK, 6, 0, Images.BLACK_PAWN,ChessPieces.PAWN),
+            new Pawn(ChessColor.BLACK, 6, 1, Images.BLACK_PAWN,ChessPieces.PAWN),
+            new Pawn(ChessColor.BLACK, 6, 2, Images.BLACK_PAWN,ChessPieces.PAWN),
+            new Pawn(ChessColor.BLACK, 6, 3, Images.BLACK_PAWN,ChessPieces.PAWN),
+            new Pawn(ChessColor.BLACK, 6, 4, Images.BLACK_PAWN,ChessPieces.PAWN),
+            new Pawn(ChessColor.BLACK, 6, 5, Images.BLACK_PAWN,ChessPieces.PAWN),
+            new Pawn(ChessColor.BLACK, 6, 6, Images.BLACK_PAWN,ChessPieces.PAWN),
+            new Pawn(ChessColor.BLACK, 6, 7, Images.BLACK_PAWN,ChessPieces.PAWN)
         ];
 
         const blackPiecesRow = [
-            new Rook('Black', 7, 0, 'BRook.png', "Rook"),
-            new Knight('Black', 7, 1, 'BKnight.png', "Knight"),
-            new Bishop('Black', 7, 2, 'BBishop.png', "Bishop"),
-            new Queen('Black', 7, 3, 'BQueen.png', "Queen"),
-            new King('Black', 7, 4, 'BKing.png', "King"),
-            new Bishop('Black', 7, 5, 'BBishop.png', "Bishop"),
-            new Knight('Black', 7, 6, 'BKnight.png', "Knight"),
-            new Rook('Black', 7, 7, 'BRook.png', "Rook"),
+            new Rook(ChessColor.BLACK, 7, 0, Images.BLACK_ROOK, ChessPieces.ROOK),
+            new Knight(ChessColor.BLACK, 7, 1, Images.BLACK_KNIGHT, ChessPieces.KNIGHT),
+            new Bishop(ChessColor.BLACK, 7, 2, Images.BLACK_BISHOP, ChessPieces.BISHOP),
+            new Queen(ChessColor.BLACK, 7, 3, Images.BLACK_QUEEN, ChessPieces.QUEEN),
+            new King(ChessColor.BLACK, 7, 4, Images.BLACK_KING, ChessPieces.KING),
+            new Bishop(ChessColor.BLACK, 7, 5, Images.BLACK_BISHOP, ChessPieces.BISHOP),
+            new Knight(ChessColor.BLACK, 7, 6, Images.BLACK_KNIGHT, ChessPieces.KNIGHT),
+            new Rook(ChessColor.BLACK, 7, 7, Images.BLACK_ROOK, ChessPieces.ROOK),
         ]
 
         const whitePiecesRow = [
-            new Rook('White', 0, 0, 'WRook.png',"Rook" ),
-            new Knight('White', 0, 1, 'WKnight.png',"Knight" ),
-            new Bishop('White', 0, 2, 'WBishop.png', "Bishop"),
-            new Queen('White', 0, 3, 'WQueen.png',"Queen" ),
-            new King('White', 0, 4, 'WKing.png', "King"),
-            new Bishop('White', 0, 5, 'WBishop.png',"Bishop"),
-            new Knight('White', 0, 6, 'WKnight.png',"Knight"),
-            new Rook('White', 0, 7, 'WRook.png', "Rook"),
+            new Rook(ChessColor.WHITE, 0, 0, Images.WHITE_ROOK,ChessPieces.ROOK ),
+            new Knight(ChessColor.WHITE, 0, 1, Images.WHITE_KNIGHT,ChessPieces.KNIGHT ),
+            new Bishop(ChessColor.WHITE, 0, 2, Images.WHITE_BISHOP, ChessPieces.BISHOP),
+            new Queen(ChessColor.WHITE, 0, 3, Images.WHITE_QUEEN,ChessPieces.QUEEN ),
+            new King(ChessColor.WHITE, 0, 4, Images.WHITE_KING, ChessPieces.KING),
+            new Bishop(ChessColor.WHITE, 0, 5, Images.WHITE_BISHOP,ChessPieces.BISHOP),
+            new Knight(ChessColor.WHITE, 0, 6, Images.WHITE_KNIGHT,ChessPieces.KNIGHT),
+            new Rook(ChessColor.WHITE, 0, 7, Images.WHITE_ROOK, ChessPieces.ROOK),
         ]
 
         const whitePawnRow = [
-            new Pawn('White', 1, 0, 'WPawn.png',"Pawn"),
-            new Pawn('White', 1, 1,'WPawn.png',"Pawn"),
-            new Pawn('White', 1, 2,'WPawn.png',"Pawn"),
-            new Pawn('White', 1, 3,'WPawn.png',"Pawn"),
-            new Pawn('White', 1, 4,'WPawn.png',"Pawn"),
-            new Pawn('White', 1, 5,'WPawn.png',"Pawn"),
-            new Pawn('White', 1, 6, 'WPawn.png',"Pawn"),
-            new Pawn('White', 1, 7,'WPawn.png',"Pawn"),
+            new Pawn(ChessColor.WHITE, 1, 0, Images.WHITE_PAWN,ChessPieces.PAWN),
+            new Pawn(ChessColor.WHITE, 1, 1,Images.WHITE_PAWN,ChessPieces.PAWN),
+            new Pawn(ChessColor.WHITE, 1, 2,Images.WHITE_PAWN,ChessPieces.PAWN),
+            new Pawn(ChessColor.WHITE, 1, 3,Images.WHITE_PAWN,ChessPieces.PAWN),
+            new Pawn(ChessColor.WHITE, 1, 4,Images.WHITE_PAWN,ChessPieces.PAWN),
+            new Pawn(ChessColor.WHITE, 1, 5,Images.WHITE_PAWN,ChessPieces.PAWN),
+            new Pawn(ChessColor.WHITE, 1, 6, Images.WHITE_PAWN,ChessPieces.PAWN),
+            new Pawn(ChessColor.WHITE, 1, 7,Images.WHITE_PAWN,ChessPieces.PAWN),
         ];
 
         const emptyRow = Array(8).fill(null);

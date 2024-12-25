@@ -5,6 +5,9 @@ import { Injectable, inject} from '@angular/core';
 import { Pawn } from '../pieces/pawn';
 
 import { ChessboardService } from './chessboard.service';
+import { ChessColor } from '../utils/utils';
+
+import { ChessPieces } from '../utils/utils';
 
 
 @Injectable({ 
@@ -14,7 +17,8 @@ export class CheckService {
 
     chessboardService = inject(ChessboardService)
 
-   
+    kingColor = ""
+
     isCheckRiders(movements: number[][], kingPosition: number[], pieceName: string){
 
         for(let movement of movements){
@@ -25,12 +29,14 @@ export class CheckService {
            
             while(row_counter + movement[0]!=-1 && row_counter + movement[0]!=8 && col_counter + movement[1]!=-1 && col_counter + movement[1]!=8){
                 
+                const color = this.chessboardService.chessboard()[movement[0] + row_counter][movement[1] + col_counter]?.getColor()
+                const name = this.chessboardService.chessboard()[movement[0] + row_counter][movement[1] + col_counter]?.getName()
                 
-                if(this.chessboardService.chessboard()[movement[0] + row_counter][movement[1] + col_counter]?.getColor() == this.chessboardService.playerTurn){
+                if(color == this.kingColor){
                     break
                 }
                 
-                if (this.chessboardService.chessboard()[movement[0] + row_counter][movement[1] + col_counter]?.getColor() != this.chessboardService.playerTurn && this.chessboardService.chessboard()[movement[0] + row_counter][movement[1] + col_counter]?.getName() == pieceName){
+                if (color != this.kingColor && name == pieceName){
 
                     this.chessboardService.pieceCausingCheck.set(`${movement[0] + row_counter}, ${movement[1] + col_counter}`)
                     
@@ -71,7 +77,7 @@ export class CheckService {
 
         for(let movement of knightMovements){
             
-            if (movement[0] > -1 && movement[0] < 8 && movement[1]  > -1 && movement[1] < 8 && chessboard[movement[0]][movement[1]]?.getColor() != this.chessboardService.playerTurn && chessboard[movement[0]][movement[1]]?.getName() == "Knight"){
+            if (movement[0] > -1 && movement[0] < 8 && movement[1]  > -1 && movement[1] < 8 && chessboard[movement[0]][movement[1]]?.getColor() != this.kingColor && chessboard[movement[0]][movement[1]]?.getName() == ChessPieces.KNIGHT){
                 this.chessboardService.pieceCausingCheck.set(`${movement[0]}, ${movement[1]}`)
                 return true
             }
@@ -88,25 +94,36 @@ export class CheckService {
 
         let movements:number[][] = []
 
-        if (this.chessboardService.playerTurn == "White"){
-
+        if (this.chessboardService.playerTurn == ChessColor.WHITE){
 
             movements.push([1,-1])
             movements.push([-1,-1])
-
         }
 
-        else if (this.chessboardService.playerTurn == "Black"){
+        else if (this.chessboardService.playerTurn == ChessColor.BLACK){
+           
+
             movements.push([1,1])
             movements.push([-1,1])
-
         }
 
         for(let movement of movements){
+
+            let row = kingPosition[0] + movement[0]
+            let col = kingPosition[1] + movement[1]
+          
             
-            if (kingPosition[0] + movement[0] > -1 && kingPosition[0] + movement[0] < 8 && kingPosition[1] + movement[1]  > -1 && kingPosition[1] + movement[1] < 8 && this.chessboardService.chessboard()[ kingPosition[0] + movement[0]][ kingPosition[1] + movement[1]]?.getName() == "Pawns"){
-                this.chessboardService.pieceCausingCheck.set(`${kingPosition[0] + movement[0]}, ${kingPosition[1] + movement[1]}`)
-                return true
+            if (row > -1 && row < 8 && col  > -1 && col < 8){
+                
+                let name = this.chessboardService.chessboard()[row][col]?.getName()
+                let color = this.chessboardService.chessboard()[row][col]?.getColor()
+
+                if(name == ChessPieces.PAWN && color != this.kingColor){
+                    this.chessboardService.pieceCausingCheck.set(`${row}, ${col}`)
+                    return true
+
+                }
+                
             }
 
         }
@@ -128,7 +145,7 @@ export class CheckService {
         let queenMovements =  [ [1,-1], [-1,1],[1,1],[-1,-1],[1,0],[0,-1],[0,1],[-1,0]]
 
 
-        if(this.isCheckRiders(bishopMovements, kingPosition, "Bishop") ||  this.isCheckRiders(rookMovements, kingPosition, "Rook") || this.isCheckRiders(queenMovements, kingPosition, "Queen") || this.isCheckKnight(kingPosition) ||  this.isCheckPawns(kingPosition)
+        if(this.isCheckRiders(bishopMovements, kingPosition, ChessPieces.BISHOP) ||  this.isCheckRiders(rookMovements, kingPosition, ChessPieces.ROOK) || this.isCheckRiders(queenMovements, kingPosition, ChessPieces.QUEEN) || this.isCheckKnight(kingPosition) ||  this.isCheckPawns(kingPosition)
         ){
             return true
 
@@ -146,7 +163,14 @@ export class CheckService {
         this.chessboardService.chessboard().some((row, i) => {
 
             return row.some((piece,j) => {
-                if(piece?.getColor() == this.chessboardService.playerTurn &&  piece?.getName() == "King"){
+                
+                if(this.chessboardService.isCheck && piece?.getColor() == this.chessboardService.playerTurn &&  piece?.getName() == ChessPieces.KING){
+                    kingPosition[0] = i
+                    kingPosition[1] = j
+                    return true
+                }
+                if(!this.chessboardService.isCheck && piece?.getColor() != this.chessboardService.playerTurn &&  piece?.getName() == ChessPieces.KING){
+                    this.kingColor = piece?.getColor()
                     kingPosition[0] = i
                     kingPosition[1] = j
                     return true
@@ -166,17 +190,23 @@ export class CheckService {
             return false
         }
 
+        this.chessboardService.playerTurn = this.chessboardService.playerTurn === ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;          
+
+
         const currVal =  this.chessboardService.chessboard()[rowIndex][colIndex]
          this.chessboardService.chessboard()[rowIndex][colIndex] = null
 
         if(this.isCheck()){
+            this.chessboardService.playerTurn = this.chessboardService.playerTurn === ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;          
             this.chessboardService.chessboard()[rowIndex][colIndex]  = currVal
             return true
         }
 
 
-
         this.chessboardService.chessboard()[rowIndex][colIndex]  = currVal
+
+        this.chessboardService.playerTurn = this.chessboardService.playerTurn === ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;          
+
         
         return false
     }
@@ -184,11 +214,14 @@ export class CheckService {
 
     canSaveCheckMate(){
 
+        console.log("this.kingColor", this.kingColor)
+
+        // this.chessboardService.playerTurn = this.chessboardService.playerTurn === ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;          
 
         for(let i=0;i<8;i++){
             for(let j=0;j<8;j++){
 
-                if(this.chessboardService.chessboard()[i][j]?.getColor() === this.chessboardService.playerTurn){
+                if(this.chessboardService.chessboard()[i][j]?.getColor() === this.kingColor && this.chessboardService.chessboard()[i][j]!= null){
                     
                     let validMoves: number[][] | undefined = this.chessboardService.chessboard()[i][j]?.validMoves(this.chessboardService.chessboard())
                 
@@ -220,11 +253,14 @@ export class CheckService {
 
     isCheckMate(){
 
-        const kingPosition = this.getKingPosition()
+
 
         if(this.canSaveCheckMate()){
             return false
         }
+
+        const kingPosition = this.getKingPosition()
+
 
         const validMoves = this.chessboardService.chessboard()[kingPosition[0]][kingPosition[1]]?.validMoves(this.chessboardService.chessboard())
 
@@ -250,6 +286,11 @@ export class CheckService {
 
         return true
 
+    }
+
+    something() {
+        // this.chessboardService.playerTurn = this.chessboardService.playerTurn === ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;          
+        return this.isCheck()
     }
    
 }
