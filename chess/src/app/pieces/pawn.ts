@@ -15,42 +15,30 @@ export class Pawn extends Piece {
         const prevRow = this.getPrevRow()
         const prevCol = this.getprevCol()
 
-        const initialPawnMove = prevRow === 6 ? -2 : 2
-        const pawnMove = this.getColor() == ChessColor.BLACK ? -1: +1
+        const initialDirection = prevRow === 6 ? -2 : 2
+        const direction = this.getColor() == ChessColor.BLACK ? -1: +1
 
         if(prevRow === 6  || prevRow === 1 ){
-            const newMove = [prevRow+initialPawnMove, prevCol]
+            const newMove = [prevRow+initialDirection, prevCol]
             newMoves.push(newMove)
         }
 
-        if(chessboard[prevRow+pawnMove][prevCol]==null){
-            const newMove = [prevRow+pawnMove, prevCol]
+        if(chessboard[prevRow+direction][prevCol]==null){
+            const newMove = [prevRow+direction, prevCol]
             newMoves.push(newMove)
         }
 
-        if(chessboard[prevRow+pawnMove][prevCol+pawnMove]!=null && chessboard[prevRow+pawnMove][prevCol+pawnMove]?.getColor()!=this.getColor()){
-            const newMove = [prevRow-1, prevCol-1]
+        if(chessboard[prevRow+direction][prevCol+direction]!=null && chessboard[prevRow+direction][prevCol+direction]?.getColor()!=this.getColor()){
+            const newMove = [prevRow+direction, prevCol+direction]
             newMoves.push(newMove)
         }
 
+        const colDirection  = this.getColor() == ChessColor.BLACK ? +1: -1
 
-        if(this.getColor() === ChessColor.BLACK){
-
-            if(chessboard[prevRow+pawnMove][prevCol+1]!=null && chessboard[prevRow-1][prevCol+1]?.getColor()!=this.getColor()){
-                const newMove = [prevRow-1, prevCol+1]
-                newMoves.push(newMove)
-            }      
-
-        }
-
-        else{
-
-            if(chessboard[prevRow+pawnMove][prevCol-1]!=null && chessboard[prevRow+1][prevCol-1]?.getColor()!=this.getColor()){
-                const newMove = [prevRow+1, prevCol-1]
-                newMoves.push(newMove)
-            }
-          
-        }
+        if(chessboard[prevRow+direction][prevCol+colDirection]!=null && chessboard[prevRow+direction][prevCol+colDirection]?.getColor()!=this.getColor()){
+            const newMove = [prevRow+direction, prevCol+colDirection]
+            newMoves.push(newMove)
+        }      
 
         return newMoves
 
