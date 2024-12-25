@@ -1,10 +1,10 @@
 import { Injectable,signal,WritableSignal  } from '@angular/core';
-import { Bishop } from '../pieces/bishop';
-import { King } from '../pieces/king';
-import { Knight } from '../pieces/knight';
-import { Pawn } from '../pieces/pawn';
-import { Pieces } from '../pieces/pieces';
-import { Queen } from '../pieces/queen';
+import { Bishop } from '../pieces/Bishop';
+import { King } from '../pieces/King';
+import { Knight } from '../pieces/Knight';
+import { Pawn } from '../pieces/Pawn';
+import { Piece } from '../pieces/Piece';
+import { Queen } from '../pieces/Queen';
 import { Rook } from '../pieces/rook';
 
 import { ChessColor } from '../utils/utils';
@@ -18,7 +18,7 @@ import { Images } from '../utils/utils';
 })
 export class ChessboardService {
     
-    chessboard = signal<(Pieces | null)[][]>(this.initializeBoard());
+    chessboard = signal<(Piece | null)[][]>(this.initializeBoard());
     playerTurn: string = ChessColor.BLACK
 
     isCheck: boolean = false
@@ -27,7 +27,7 @@ export class ChessboardService {
 
     pieceCausingCheck: WritableSignal<string> = signal("");
 
-    private initializeBoard(): (Pieces | null)[][] {
+    private initializeBoard(): (Piece | null)[][] {
         
         const blackPawnRow = [
             new Pawn(ChessColor.BLACK, 6, 0, Images.BLACK_PAWN,ChessPieces.PAWN),

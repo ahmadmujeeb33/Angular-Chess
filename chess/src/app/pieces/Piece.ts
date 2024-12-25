@@ -1,7 +1,7 @@
 
 
 
-export abstract class Pieces {
+export abstract class Piece {
     
     private color: string;
     private prevRow: number
@@ -17,7 +17,7 @@ export abstract class Pieces {
         this.name = name
     }
 
-    abstract validMoves(chessboard: (Pieces | null)[][]):  number[][];
+    abstract validMoves(chessboard: (Piece | null)[][]):  number[][];
 
     setPrevRow(row:number){
         this.prevRow = row

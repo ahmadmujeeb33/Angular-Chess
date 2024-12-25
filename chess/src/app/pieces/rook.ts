@@ -2,15 +2,14 @@
 
 
 
-import { Pieces } from "./pieces";
-import { Riders } from "./riders";
+import { Piece } from "./Piece";
+import { Rider } from "./Rider";
 
 
-export class Rook extends Pieces {
+export class Rook extends Piece {
   
-    riders = new Riders()
 
-    validMoves(chessboard: (Pieces | null)[][]): number[][] {
+    validMoves(chessboard: (Piece | null)[][]): number[][] {
 
 
         let prevRow = this.getPrevRow()
@@ -23,7 +22,7 @@ export class Rook extends Pieces {
         ];
 
 
-        const newMoves = this.riders.getMoves(chessboard, movements, prevRow, prevCol, color)
+        const newMoves = Rider.getMoves(chessboard, movements, prevRow, prevCol, color)
 
        
         return newMoves

@@ -1,6 +1,5 @@
-import { Component, inject, ChangeDetectorRef, signal } from '@angular/core';
-import { Pawn } from '../pieces/pawn';
-import { Pieces } from '../pieces/pieces';
+import { Component, inject, signal } from '@angular/core';
+
 
 import { ChessboardService } from '../services/chessboard.service';
 import { CheckService } from '../services/check.service';
@@ -50,119 +49,95 @@ export class BoardComponent {
   handleCellSelection(rowIndex: number, colIndex: number): void {
     this.lastClickedCell.row = rowIndex;
     this.lastClickedCell.col = colIndex;
-  
-    
 
     const pieces = this.chessboardService.chessboard()[rowIndex][colIndex]
-    
    
     if (pieces !== null) {
       const res = pieces.validMoves(this.chessboardService.chessboard());
       this.updateHighlightedCells(res);
     }
   }
+  
+
+  movePieces(rowIndex:number, colIndex: number){
+
+    let old_pos = this.chessboardService.chessboard()[this.lastClickedCell.row][this.lastClickedCell.col]
+
+
+    this.chessboardService.chessboard()[this.lastClickedCell.row][this.lastClickedCell.col] = null
+
+    old_pos?.setPrevRow(rowIndex)
+    old_pos?.setPrevCol(colIndex)
+
+    this.chessboardService.chessboard()[rowIndex][colIndex] = old_pos
+
+  }
+
+  revertPiece(rowIndex:number, colIndex: number){
+    let old_pos = this.chessboardService.chessboard()[rowIndex][colIndex]
+  
+    this.chessboardService.chessboard()[this.lastClickedCell.row][this.lastClickedCell.col] = old_pos
+
+
+    old_pos?.setPrevRow(this.lastClickedCell.row)
+    old_pos?.setPrevCol(this.lastClickedCell.col)
+
+    this.chessboardService.chessboard()[rowIndex][colIndex] = null
+  }
 
 
   validMoves (rowIndex:number, colIndex:number) {
-
 
     if( this.playerTurn === this.chessboardService.chessboard()[rowIndex][colIndex]?.getColor()){
       if(this.highlightedCells.size!=0  &&  !this.highlightedCells.has(`${rowIndex}, ${colIndex}`)){
 
         this.highlightedCells.clear()
-  
         this.handleCellSelection(rowIndex, colIndex)
-  
+
       }
   
       else if(this.highlightedCells.size==0){
         this.handleCellSelection(rowIndex, colIndex)
         
-  
       }
     }
    
-
     else if(this.highlightedCells.has(`${rowIndex}, ${colIndex}`)){
 
-  
-        this.highlightedCells.clear()
+      this.highlightedCells.clear()
+      this.movePieces(rowIndex, colIndex)
 
-        let old_pos = this.chessboardService.chessboard()[this.lastClickedCell.row][this.lastClickedCell.col]
-  
-
-        this.chessboardService.chessboard()[this.lastClickedCell.row][this.lastClickedCell.col] = null
-  
-        old_pos?.setPrevRow(rowIndex)
-        old_pos?.setPrevCol(colIndex)
-
-        this.chessboardService.chessboard()[rowIndex][colIndex] = old_pos
-
-
+      if (this.checkService.isCheck(this.playerTurn)){
         
-        // const color = this.chessboardService.chessboard()[rowIndex][colIndex]?.getColor()
+        this.revertPiece(rowIndex, colIndex)
 
-        const ans = this.checkService.isCheck(this.playerTurn)
+        return
 
-        if (ans){
-          
-          let old_pos = this.chessboardService.chessboard()[rowIndex][colIndex]
-    
-          this.chessboardService.chessboard()[this.lastClickedCell.row][this.lastClickedCell.col] = old_pos
-    
-    
-          old_pos?.setPrevRow(this.lastClickedCell.row)
-          old_pos?.setPrevCol(this.lastClickedCell.col)
-  
-          this.chessboardService.chessboard()[rowIndex][colIndex] = null
+      }
 
-          
-          return
- 
+      if(!this.chessboardService.isCheck){
+        this.playerTurn = this.playerTurn === ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
+      }
+
+      if(this.checkService.isCheck(this.playerTurn)){
+
+        this.chessboardService.isCheck = true
+        this.isCheckVal = this.chessboardService.pieceCausingCheck()
+
+        if(this.checkService.isCheckMate(this.playerTurn)){
+          this.isCheckMate.set(true)
         }
+      }
+      else{
 
-        
-        if(!this.chessboardService.isCheck){
+        if(this.chessboardService.isCheck){
           this.playerTurn = this.playerTurn === ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
-
         }
-
-
         
-        const res = this.checkService.isCheck(this.playerTurn)
-
-
-        if(res){
-
-          this.chessboardService.isCheck = true
-
-          this.isCheckVal = this.chessboardService.pieceCausingCheck()
-
-          console.log("//////")
-
-          if(this.checkService.isCheckMate(this.playerTurn)){
-            this.isCheckMate.set(true)
-          }
-
-
-          
-        }
-        else{
-
-          if(this.chessboardService.isCheck){
-            this.playerTurn = this.playerTurn === ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
-
-          }
-          
-          this.isCheckVal = ''
-          this.chessboardService.isCheck = false
-
-
-
-        }
-  
+        this.isCheckVal = ''
+        this.chessboardService.isCheck = false
+      }
     }
-
   }
 
   updateHighlightedCells(highlightedCells:  number[][]){
@@ -170,11 +145,8 @@ export class BoardComponent {
     for (const cell of highlightedCells) {
     
       this.highlightedCells.add(`${cell[0]}, ${cell[1]}`)
-      
-      
+         
     }
-
-
   }
 
   isCellHighlighted(rowIndex: number, colIndex: number){

@@ -2,13 +2,13 @@
 
 
 
-import { Pieces } from "./pieces";
+import { Piece } from "./Piece";
 
 
-export class Knight extends Pieces {
+export class Knight extends Piece {
   
 
-    validMoves(chessboard: (Pieces | null)[][]): number[][] {
+    validMoves(chessboard: (Piece | null)[][]): number[][] {
 
       
         let newMoves: number[][] = []; 

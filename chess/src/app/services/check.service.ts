@@ -2,7 +2,7 @@
 
 
 import { Injectable, inject} from '@angular/core';
-import { Pawn } from '../pieces/pawn';
+import { Pawn } from '../pieces/Pawn';
 
 import { ChessboardService } from './chessboard.service';
 import { ChessColor } from '../utils/utils';
@@ -188,8 +188,6 @@ export class CheckService {
 
 
     canSaveCheckMate(playerTurn: string){
-
-        console.log("this.kingColor", this.kingColor)
 
 
         for(let i=0;i<8;i++){

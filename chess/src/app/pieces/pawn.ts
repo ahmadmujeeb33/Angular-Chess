@@ -1,13 +1,13 @@
 
 
-import { Pieces } from "./pieces";
+import { Piece } from "./Piece";
 
 import { ChessColor } from "../utils/utils";
 
-export class Pawn extends Pieces {
+export class Pawn extends Piece {
   
 
-    validMoves(chessboard: (Pieces | null)[][]): number[][] {
+    validMoves(chessboard: (Piece | null)[][]): number[][] {
 
       
         let newMoves: number[][] = []; 

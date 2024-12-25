@@ -1,11 +1,11 @@
 
-import { Pieces } from "./pieces";
+import { Piece } from "./Piece";
 
 
 
-export class Riders  {
+export  class  Rider  {
 
-    getMoves(chessboard: (Pieces | null)[][], movements: [number, number][], prevRow:number, prevCol:number, color: string): number[][] {
+    static getMoves(chessboard: (Piece | null)[][], movements: [number, number][], prevRow:number, prevCol:number, color: string): number[][] {
 
       
         let newMoves: number[][] = []; 
