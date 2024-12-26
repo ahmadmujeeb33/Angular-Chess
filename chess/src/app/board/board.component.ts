@@ -91,7 +91,6 @@ export class BoardComponent {
      
       this.highlightedCells.clear()
       this.handleCellSelection(rowIndex, colIndex)
-     
     }
    
     else if(this.highlightedCells.has(`${rowIndex}, ${colIndex}`)){
@@ -102,9 +101,7 @@ export class BoardComponent {
       if (this.checkService.isCheck(this.playerTurn)){
         
         this.revertPiece(rowIndex, colIndex)
-
         return
-
       }
 
       if(!this.chessboardService.isCheck){

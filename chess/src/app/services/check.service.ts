@@ -43,8 +43,6 @@ export class CheckService {
                     return true
                 }
 
-            
-
                 row_counter+=movement[0]
                 col_counter+=movement[1]
 
@@ -52,7 +50,6 @@ export class CheckService {
         }
 
         this.chessboardService.pieceCausingCheck.set("")
-
 
         return false
 
@@ -92,20 +89,7 @@ export class CheckService {
 
     isCheckPawns(kingPosition: number[], playerTurn: string){
 
-        let movements:number[][] = []
-
-        if (playerTurn == ChessColor.WHITE){
-
-            movements.push([1,-1])
-            movements.push([-1,-1])
-        }
-
-        else if (playerTurn == ChessColor.BLACK){
-           
-
-            movements.push([1,1])
-            movements.push([-1,1])
-        }
+        let movements:number[][] =  playerTurn === ChessColor.WHITE ? [[1, -1], [-1, -1]]: [[1, 1], [-1, 1]];
 
         for(let movement of movements){
 
@@ -164,12 +148,7 @@ export class CheckService {
 
             return row.some((piece,j) => {
                 
-                if(this.chessboardService.isCheck && piece?.getColor() == playerTurn &&  piece?.getName() == ChessPieces.KING){
-                    kingPosition[0] = i
-                    kingPosition[1] = j
-                    return true
-                }
-                if(!this.chessboardService.isCheck && piece?.getColor() == playerTurn &&  piece?.getName() == ChessPieces.KING){
+                if(piece?.getColor() == playerTurn &&  piece?.getName() == ChessPieces.KING){
                     this.kingColor = piece?.getColor()
                     kingPosition[0] = i
                     kingPosition[1] = j
@@ -185,10 +164,7 @@ export class CheckService {
     }
 
   
-
-
     canSaveCheckMate(playerTurn: string){
-
 
         for(let i=0;i<8;i++){
             for(let j=0;j<8;j++){
@@ -203,15 +179,15 @@ export class CheckService {
                             let temp = this.chessboardService.chessboard()[i][j]
                             this.chessboardService.chessboard()[i][j] = this.chessboardService.chessboard()[moves[0]][moves[1]]
                             this.chessboardService.chessboard()[moves[0]][moves[1]] = temp
-    
-                            if(!this.isCheck(playerTurn)){
-                                this.chessboardService.chessboard()[moves[0]][moves[1]] = this.chessboardService.chessboard()[i][j]
-                                this.chessboardService.chessboard()[i][j] = temp    
-                                return true
-                            }
-    
+
+                            const stillInCheck = this.isCheck(playerTurn);
+
                             this.chessboardService.chessboard()[moves[0]][moves[1]] = this.chessboardService.chessboard()[i][j]
                             this.chessboardService.chessboard()[i][j] = temp
+
+                            if(!stillInCheck){
+                                return true
+                            }
         
                         }
                     }
@@ -225,14 +201,11 @@ export class CheckService {
 
     isCheckMate(playerTurn: string){
 
-
-
         if(this.canSaveCheckMate(playerTurn)){
             return false
         }
 
         const kingPosition = this.getKingPosition(playerTurn)
-
 
         const validMoves = this.chessboardService.chessboard()[kingPosition[0]][kingPosition[1]]?.validMoves(this.chessboardService.chessboard())
 
@@ -244,15 +217,14 @@ export class CheckService {
 
                 this.chessboardService.chessboard()[move[0]][move[1]] = val;
 
-
-                if (!this.isCheck(playerTurn)) {
-                    this.chessboardService.chessboard()[kingPosition[0]][kingPosition[1]] = val;
-                    this.chessboardService.chessboard()[move[0]][move[1]] = moveVal;
-                    return false; 
-                }
+                const stillInCheck = this.isCheck(playerTurn);
 
                 this.chessboardService.chessboard()[kingPosition[0]][kingPosition[1]] = val;
                 this.chessboardService.chessboard()[move[0]][move[1]] = moveVal;
+
+                if(!stillInCheck){
+                    return false
+                }
             }
         }
 
