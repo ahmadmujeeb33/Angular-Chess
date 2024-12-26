@@ -88,18 +88,11 @@ export class BoardComponent {
 
   validMoves (rowIndex:number, colIndex:number) {
 
-    if( this.playerTurn === this.chessboardService.chessboard()[rowIndex][colIndex]?.getColor()){
-      if(this.highlightedCells.size!=0  &&  !this.highlightedCells.has(`${rowIndex}, ${colIndex}`)){
-
-        this.highlightedCells.clear()
-        this.handleCellSelection(rowIndex, colIndex)
-
-      }
-  
-      else if(this.highlightedCells.size==0){
-        this.handleCellSelection(rowIndex, colIndex)
-        
-      }
+    if(this.playerTurn === this.chessboardService.chessboard()[rowIndex][colIndex]?.getColor()){
+     
+      this.highlightedCells.clear()
+      this.handleCellSelection(rowIndex, colIndex)
+     
     }
    
     else if(this.highlightedCells.has(`${rowIndex}, ${colIndex}`)){

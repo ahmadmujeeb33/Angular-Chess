@@ -15,6 +15,7 @@ export class Pawn extends Piece {
         const prevRow = this.getPrevRow()
         const prevCol = this.getprevCol()
 
+
         const initialDirection = prevRow === 6 ? -2 : 2
         const direction = this.getColor() == ChessColor.BLACK ? -1: +1
 
