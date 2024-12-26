@@ -38,7 +38,6 @@ export class BoardComponent {
     }
 
     if(this.isCheckVal[0] ==  rowIndex.toString() && this.isCheckVal[3] ==  colIndex.toString()){
-      console.log("in here")
       res+=  ` check`
     }
 
@@ -109,24 +108,23 @@ export class BoardComponent {
       }
 
       if(!this.chessboardService.isCheck){
-        this.playerTurn = this.playerTurn === ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
-      }
-
-      if(this.checkService.isCheck(this.playerTurn)){
-
-        this.chessboardService.isCheck = true
-        this.isCheckVal = this.chessboardService.pieceCausingCheck()
-
-        if(this.checkService.isCheckMate(this.playerTurn)){
-          this.isCheckMate.set(true)
-        }
-      }
-      else{
-
-        if(this.chessboardService.isCheck){
-          this.playerTurn = this.playerTurn === ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
-        }
         
+        this.playerTurn = this.playerTurn === ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
+        
+        if(this.checkService.isCheck(this.playerTurn)){
+
+          this.chessboardService.isCheck = true
+          this.isCheckVal = this.chessboardService.pieceCausingCheck()
+  
+          if(this.checkService.isCheckMate(this.playerTurn)){
+            this.isCheckMate.set(true)
+          }
+        }
+      }
+      
+      else{
+      
+        this.playerTurn = this.playerTurn === ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
         this.isCheckVal = ''
         this.chessboardService.isCheck = false
       }
